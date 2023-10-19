@@ -427,7 +427,7 @@ class SQLiteDatabase(Database):
         row_dict = self._to_dict(row)
         for key, col_schema in self.schema.items():
             col = row_dict[key]
-            if isinstance(self.schema[key], TensorInfo):
+            if isinstance(self.schema[key], TensorInfo) or isinstance(col_schema, bool):
                 out.append(col.numpy().tobytes())
             elif isinstance(col, Tensor):
                 self.schema[key] = TensorInfo(dtype=col.dtype)
@@ -448,7 +448,7 @@ class SQLiteDatabase(Database):
         out_dict = {}
         for i, (key, col_schema) in enumerate(self.schema.items()):
             value = row[i]
-            if isinstance(col_schema, TensorInfo):
+            if isinstance(col_schema, TensorInfo) or isinstance(col_schema, bool):
                 if len(value) > 0:
                     tensor = torch.frombuffer(value, dtype=col_schema.dtype)
                 else:
